@@ -71,8 +71,9 @@ def evaluate_input(user_input):
         return
     if re.compile("^new \d*$").match(user_input):
         game_range = int(re.sub("new ","",user_input))
-        reset_globals(game_range)
-        return
+        if game_range > 0:
+            reset_globals(game_range)
+            return
     if re.compile("^\d*$").match(user_input):
         handle_guess(int(user_input))
         return
