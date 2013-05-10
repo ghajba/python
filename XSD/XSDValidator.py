@@ -30,15 +30,15 @@ def validate_files():
 def main():
     if(len(sys.argv) < 3):
         usage()
-        exit()
+        sys.exit()
     for arg in sys.argv[1:]:
-        if arg.endswith(".xml"):
+        if arg.lower().endswith(".xml"):
             xml_files.append(arg)
-        elif arg.endswith(".xsd"):
+        elif arg.lower().endswith(".xsd"):
             xsd_files.append(arg)
     if len(xsd_files) < 1 or len(xml_files) < 1:
         usage()
-        exit()
+        sys.exit()
     validate_files()
         
 if __name__ == '__main__':
