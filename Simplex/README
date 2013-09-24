@@ -1,0 +1,18 @@
+This folder contains a simple, big algorithm for solving optimization problems (linear programs) with the simplex algorithm.
+
+Key features:
+ * self-implemented
+ * basic visualization (with future enhancements)
+ * works only with a feasible dictionary
+ * feasibility detection
+ * UNBOUNDED as returning value if the entering variable provides, that the problem dictionary is unbounded
+ * using Bland's Rule to avoid cycles (eventually bad performance because cycles are rare in random problems)
+
+Future improvements:
+ * detecting need of slack variables
+ * converting problem to standard form
+ * improved visualization
+ * initialization phase
+ * greedy heuristics besides Bland's Rule
+ * largest objective coefficient heuristics
+ 
