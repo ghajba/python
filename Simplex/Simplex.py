@@ -36,6 +36,8 @@ basic = []
 non_basic = []
 b = []
 z = []
+z_original = []
+non_basic_original = []
 
 
 def init(file_location):
@@ -147,9 +149,40 @@ def recalculate_dictionary(e_idx, l_idx):
             z[i] = (coeff*A_matrix[l_idx][i-1])
 
 
+def do_magic_step():
+    global z_original, z, non_basic_original, non_basic
+    z_original = z
+    z = [0 for i in range(len(z))]
+    z.append(-1)
+    non_basic_original = non_basic
+    non_basic.append(0)
+    for r in A_matrix:
+        r.append(1)
+    recalculate_dictionary(len(non_basic)-1, b.index(min(b)))
+    
+    
+            
 def solve_problem():
     """ This method solves the problem initialized from the input data """
-    print
+    # look if provided data is feasible
+    if sum(1 for bi in b if bi < 0) != 0:
+    # if not, do the initialization phase
+        do_magic_step()
+        leaving = None
+        while leaving != 0 and not final_dictionary():
+            entering = find_entering()
+            e_idx = non_basic.index(entering)
+            leaving = find_leaving(e_idx)
+            if leaving is not None:
+                l_idx = basic.index(leaving)
+            else:
+                print "UNBOUNDED"
+                break
+            recalculate_dictionary(e_idx, l_idx)
+        return
+        # look if feasible after initialization
+        # if not, print error message, end pivoting
+    #do the pivot
     pivoting_steps = 0
     while True:
         entering = find_entering()
@@ -165,7 +198,6 @@ def solve_problem():
         if final_dictionary():
             break
     print "Objective Value: {0:.5f} \nPivoting Steps: {1}".format(z[0], pivoting_steps)
-    write_output(z[0], pivoting_steps)
 
 
 def print_simplex_dict():
@@ -192,15 +224,11 @@ def print_simplex_dict():
     print line_text
 
 
-def write_output(objective_value, pivoting_steps):
+def write_output(objective_value):
     """ This method writes the output to a file with the name of the input file --
         adding a '.sol' at the end of the file name. """
     output = open(filename+".sol", 'w')
-    if pivoting_steps < 1:
-        output.write("UNBOUNDED")
-    else:
-        output.write("{0:.5f}\n".format(objective_value))
-        output.write(str(pivoting_steps))
+    output.write("{0:.5f}\n".format(objective_value))
     output.close()
 
 if __name__ == '__main__':
