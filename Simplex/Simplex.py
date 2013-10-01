@@ -150,6 +150,13 @@ def recalculate_dictionary(e_idx, l_idx):
 
 
 def do_magic_step():
+    """ This method does the magic step for the initialization phase:
+        0. save the original problem, the original set of non-basic variables
+        1. change all values of the objective function to 0, then append -1 for x_0
+        2. add x_0 to the non-basic variables
+        3. add +1 to each line of the A_matrix representing x_0
+        4. recalculate the dictionary with x_0 as entering variable, 
+            and the line containing the minimum value of the b vector as leaving variable"""
     global z_original, z, non_basic_original, non_basic
     z_original = z
     z = [0 for i in range(len(z))]
@@ -159,32 +166,35 @@ def do_magic_step():
     for r in A_matrix:
         r.append(1)
     recalculate_dictionary(len(non_basic)-1, b.index(min(b)))
-    
-    
+        
             
-def solve_problem():
-    """ This method solves the problem initialized from the input data """
-    # look if provided data is feasible
-    if sum(1 for bi in b if bi < 0) != 0:
-    # if not, do the initialization phase
-        do_magic_step()
-        leaving = None
-        while leaving != 0 and not final_dictionary():
-            entering = find_entering()
-            e_idx = non_basic.index(entering)
-            leaving = find_leaving(e_idx)
-            if leaving is not None:
-                l_idx = basic.index(leaving)
-            else:
-                print "UNBOUNDED"
-                break
-            recalculate_dictionary(e_idx, l_idx)
-        return
-        # look if feasible after initialization
-        # if not, print error message, end pivoting
-    #do the pivot
+def initialize_simplex():
+    """ This method initializes the Simplex dictionary to a possible feasible solution.
+        This includes the magic step with the x_0 variable and the initial pivoting.
+        The method returns "True" if the initialization succeeded, "False" if the problem is infeasible."""
+    do_magic_step()
+    leaving = None
+    while leaving != 0 and not final_dictionary():
+        entering = find_entering()
+        e_idx = non_basic.index(entering)
+        leaving = find_leaving(e_idx)
+        if leaving is not None:
+            l_idx = basic.index(leaving)
+        else:
+            return False
+        recalculate_dictionary(e_idx, l_idx)
+    return True
+       
+       
+def rearrange_initial_feasible_dictionary():
+    """ This method rearranges the initialized dictionary with the original objective value for pivoting."""
+    print "Currently not implemented"
+    pass
+       
+       
+def pivot_dictionary():
     pivoting_steps = 0
-    while True:
+    while not final_dictionary():
         entering = find_entering()
         e_idx = non_basic.index(entering)
         leaving = find_leaving(e_idx)
@@ -192,11 +202,20 @@ def solve_problem():
             l_idx = basic.index(leaving)
         else:
             print "UNBOUNDED"
-            break
+            return -1
         recalculate_dictionary(e_idx, l_idx)
         pivoting_steps += 1
-        if final_dictionary():
-            break
+    return pivoting_steps
+       
+       
+def solve_problem():
+    """ This method solves the problem initialized from the input data """
+    if sum(1 for bi in b if bi < 0) != 0:
+        if not initialize_simplex() or z[0] != 0:
+            print "INFEASIBLE"
+            return
+        rearrange_initial_feasible_dictionary()
+    pivoting_steps = pivot_dictionary()    
     print "Objective Value: {0:.5f} \nPivoting Steps: {1}".format(z[0], pivoting_steps)
 
 
