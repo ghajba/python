@@ -1,0 +1,4 @@
+.idea
+*.sol
+*.dict
+dict*
