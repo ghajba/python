@@ -159,7 +159,7 @@ def do_magic_step():
             and the line containing the minimum value of the b vector as leaving variable"""
     global z_original, z, non_basic_original, non_basic
     z_original = z
-    z = [0 for i in range(len(z))]
+    z = [0]*len(z)
     z.append(-1)
     non_basic_original = non_basic
     non_basic.append(0)
