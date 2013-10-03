@@ -158,10 +158,10 @@ def do_magic_step():
         4. recalculate the dictionary with x_0 as entering variable, 
             and the line containing the minimum value of the b vector as leaving variable"""
     global z_original, z, non_basic_original, non_basic
-    z_original = z
+    z_original = list(z)
     z = [0]*len(z)
     z.append(-1)
-    non_basic_original = non_basic
+    non_basic_original = list(non_basic)
     non_basic.append(0)
     for r in A_matrix:
         r.append(1)
