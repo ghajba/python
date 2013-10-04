@@ -132,7 +132,7 @@ def recalculate_dictionary(e_idx, l_idx):
     for i in range(len(basic)):
         c_i = A_matrix[i][e_idx]
         if i != l_idx:
-            b[i] += c_i*b[l_idx] # 4.
+            b[i] += c_i*b[l_idx]  # 4.
             for j in range(len(A_matrix[i])):
                 if j != e_idx:
                     A_matrix[i][j] += c_i*A_matrix[l_idx][j]
@@ -188,10 +188,28 @@ def initialize_simplex():
        
 def rearrange_initial_feasible_dictionary():
     """ This method rearranges the initialized dictionary with the original objective value for pivoting."""
-    print "Currently not implemented"
-    pass
-       
-       
+    global z
+    # 1. remove x_0 from the variables
+    x_0_index = non_basic.index(0)
+    del non_basic[x_0_index]
+    for line in A_matrix:
+        del line[x_0_index]
+
+    # 2. recalculate z with the original objective function
+    z = [0]*(len(non_basic)+1)
+    z[0] = z_original[0]
+    for v in non_basic_original:
+        if v in non_basic:
+            v_index = non_basic.index(v)
+            z[v_index+1] = z_original[non_basic_original.index(v)+1]
+    for v in basic:
+        if v in non_basic_original:
+            v_c = z_original[non_basic_original.index(v)+1]
+            z[0] += v_c*b[basic.index(v)]
+            for i in range(len(A_matrix[basic.index(v)])):
+                z[i+1] += v_c*A_matrix[basic.index(v)][i]
+
+
 def pivot_dictionary():
     pivoting_steps = 0
     while not final_dictionary():
