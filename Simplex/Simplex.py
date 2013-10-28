@@ -1,4 +1,3 @@
-
 # Input file description
 #[Line 1] m n
 #[Line 2] B1 B2 ... Bm [the list of basic indices m integers]
@@ -9,7 +8,7 @@
 #[Line m+4] am1 ... amn (mth row of A matrix)
 #[Line m+5] z0 c1 .. cn (objective coefficients (n+1 floating point numbers)) 
 
-import sys
+import sys, math
 
 
 class InvalidInputError(Exception):
@@ -39,7 +38,30 @@ z = []
 z_original = []
 non_basic_original = []
 
-
+def isinteger(number):
+    """ This method decides if a given floating point number is an integer or not --
+        so only 0s after the decimal point.
+        For example 1.0 is an integer 1.0002 is not."""
+    return number % 1 == 0
+    
+def isnointeger(number):
+    """ This method decides if a given floating point number is an integer or not --
+        so only 0s after the decimal point.
+        For example 1.0 is an integer 1.0002 is not."""
+    return number % 1 != 0
+    
+def get_noninteger_indexes():
+    """ This method returns all indexes of the b vector where the value is not an integer """
+    result = []
+    for i in range(len(b)):
+        if not isinteger(b[i]) and not isinteger(round(b[i], 6)): # at this point I treat floats as integers
+            result.append(i)
+    return result
+    
+def get_fractional(number):
+    n = number*-1
+    return n - math.floor(n)
+    
 def init(file_location):
     """ This method initializes the variables with the data from the file """
     global n, m, b, z, basic, non_basic, A_matrix
@@ -226,16 +248,44 @@ def pivot_dictionary():
     return pivoting_steps
        
        
+def gomory_chvatal(cutting_indexes):
+    """ This method adds all Gomory-Chvatal cuts to the dictionary based on the cutting_indexes parameter """
+    global m
+    for i in cutting_indexes:
+        m += 1
+        basic.append(m+n)
+        b.append((b[i]%1)*-1)
+        A_matrix.append(map(get_fractional, A_matrix[i]))
+    
+       
 def solve_problem():
     """ This method solves the problem initialized from the input data """
+    print "Solving (relaxed) LP..."
     if sum(1 for bi in b if bi < 0) != 0:
         if not initialize_simplex() or z[0] != 0:
             print "INFEASIBLE"
             return
         rearrange_initial_feasible_dictionary()
     pivoting_steps = pivot_dictionary()    
-    print "Objective Value: {0:.5f} \nPivoting Steps: {1}".format(z[0], pivoting_steps)
-
+    print "Objective Value of the (relaxed) LP: {0:.5f} \nPivoting Steps: {1}".format(z[0], pivoting_steps)
+    non_integers = get_noninteger_indexes()
+    if len(non_integers) == 0:
+        print "ILP solution is the same with the LP solution"
+        return
+    print "Solving ILP..."
+    # get all Gomory-Chvatal cuts and add them to the problem
+    while(len(non_integers) != 0):
+        gomory_chvatal(non_integers)
+        
+        # solve with initialization and pivoting
+        if not initialize_simplex():
+            print "Infeasible cut problem..."
+            return
+        rearrange_initial_feasible_dictionary()
+        pivot_dictionary()
+        non_integers = get_noninteger_indexes()
+    print "Objective Value of the ILP: {0:.5f}".format(z[0])
+        
 
 def print_simplex_dict():
     """ This method prints the simplex dictionary to the console.
