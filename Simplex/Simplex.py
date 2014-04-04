@@ -38,18 +38,21 @@ z = []
 z_original = []
 non_basic_original = []
 
+
 def isinteger(number):
     """ This method decides if a given floating point number is an integer or not --
         so only 0s after the decimal point.
         For example 1.0 is an integer 1.0002 is not."""
     return number % 1 == 0
-    
+
+
 def isnointeger(number):
     """ This method decides if a given floating point number is an integer or not --
         so only 0s after the decimal point.
         For example 1.0 is an integer 1.0002 is not."""
     return number % 1 != 0
-    
+
+
 def get_noninteger_indexes():
     """ This method returns all indexes of the b vector where the value is not an integer """
     result = []
@@ -57,11 +60,13 @@ def get_noninteger_indexes():
         if not isinteger(b[i]) and not isinteger(round(b[i], 6)): # at this point I treat floats as integers
             result.append(i)
     return result
-    
+
+
 def get_fractional(number):
     n = number*-1
     return n - math.floor(n)
-    
+
+
 def init(file_location):
     """ This method initializes the variables with the data from the file """
     global n, m, b, z, basic, non_basic, A_matrix
@@ -274,7 +279,7 @@ def solve_problem():
         return
     print "Solving ILP..."
     # get all Gomory-Chvatal cuts and add them to the problem
-    while(len(non_integers) != 0):
+    while len(non_integers) != 0:
         gomory_chvatal(non_integers)
         
         # solve with initialization and pivoting

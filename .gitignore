@@ -156,6 +156,8 @@ pip-log.txt
 #Translations
 *.mo
 
+sympy*/*
+
 #Mr Developer
 .mr.developer.cfg
 
