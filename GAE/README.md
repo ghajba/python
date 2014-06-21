@@ -5,3 +5,4 @@ Features:
  * SOAP client with Suds
  * custom 3rd party library
 
+The application is deployed to: http://helloworld-ghajba.appspot.com/
