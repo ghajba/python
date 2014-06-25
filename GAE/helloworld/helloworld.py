@@ -11,31 +11,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-MAIN_PAGE_HTML_HEAD = """\
-<html>
-  <head>
-    <title>Simple GAE Project by GHajba</title>
-  </head>
-  <body>
-  	<h1>Welmoe to this all-in-one GAE project</h1>
-  	<div>This is a simple web application on the GAE created in Python</div>
-"""
-
-MAIN_PAGE_HTML_FOOT = """\
-    <hr />
-  </body>
-</html>
-"""
-
-MAIN_PAGE_HTML_WEATHER_FORM = """\
-    <hr />
-    <form action="/weather" method="get">
-      <div>Look up the weather of a US-City by its ZIP-Code:</div>
-      <div><input name="zip" type="number" size="10" min="10000" max="99999" required></div>
-      <div><input type="submit" value="Ask for the weather"></div>
-    </form>
-"""
-
 class MainPage(webapp2.RequestHandler):
     def get(self):
       weather_description = None
