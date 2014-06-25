@@ -13,7 +13,6 @@ MAIN_PAGE_HTML_HEAD = """\
   <body>
   	<h1>Welmoe to this all-in-one GAE project</h1>
   	<div>This is a simple web application on the GAE created in Python</div>
-  	<h3>Printing "Hello World" in Chinese:</h3>
 """
 
 MAIN_PAGE_HTML_FOOT = """\
